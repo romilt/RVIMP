@@ -1,0 +1,23 @@
+Package: RVIMP
+Type: Package
+Title: A Toolkit for better interpretability of Random Forests
+Version: 0.1.0
+Author: University of Applied Sciences Darmstadt
+Maintainer: Robert Miltenberger <robert.miltenberger@h-da.de>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2
+Imports:
+  ggplot2 (>= 2.0.1),
+  stats,
+  ranger,
+  survival,
+  graphics
+Depends: R (>= 2.10)
+Suggests:
+  rmarkdown,
+  knitr
+VignetteBuilder: knitr

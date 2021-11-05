@@ -1,0 +1,27 @@
+#' Render R Markdown to analyze a data set for dependencies using RVIMP package
+#' @description Generates a detailed analysis to check for dependencies within a data set using Permutation Variable Importance Measures. Provides results as a .html-file in the desired directory. All intermediate files (e.g. generated plots) are written to the same directory.
+#' @param formula Object of class formula or character describing the model to fit.
+#' @param data Training data of class data.frame.
+#' @param Z Name of all variables the RVIMPs shall be calculated for. If \code{conf}="all" the procedure is done for all independed variables from \code{formula}.
+#' @param residual.model Modeltype the residuals of \code{conf} shall be based on. Either "Linear" or "RandomForest".
+#' @param reps Number of respamplings to estimate the RVIMP distribution with \link{get_distribution}.
+#' @param sample_seed Seed to use for \link{get_distribution}. Must be set for reproducible results.
+#' @param seed Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample_seed} is needed to draw the resamplings for the test procedure.
+#' @param alpha.one.sided Type I error probability.
+#' @param num.trees Number of trees within each ranger object.
+#' @param file.name The name of the output file. If using \code{NULL} then the output file is named "report_RVIMP.html".
+#' @param file.directory The output directory for the rendered \code{file.name}. This allows for a choice of an alternate directory to which the output file should be written (the default output directory is within the package folder). If a path is provided with a filename in \code{file.name} the directory specified here will take precedence. Please note that any directory path provided will create any necessary directories if they do not exist.
+#' @export
+run_markdown <- function(formula,data,Z,residual.model,seed,reps,sample_seed,alpha.one.sided,num.trees,file.name,file.directory) {
+  appDir <- system.file("markdown","report_RVIMP.Rmd", package = "RVIMP")
+  if (appDir == "") {
+    stop("Could not find example directory. Try re-installing `RVIMP`.", call. = FALSE)
+  }
+
+  out<-rmarkdown::render(appDir,
+                         output_file = file.name,
+                         output_dir = file.directory,
+                    output_format = "html_document",
+                    params = list(form=formula,dat=data,con=Z,model=residual.model,se=seed,sample_se=sample_seed,rep=reps,alpha=alpha.one.sided,num=num.trees),
+                    envir = new.env(), clean = FALSE, quiet = T)
+}

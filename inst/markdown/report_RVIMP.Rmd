@@ -1,0 +1,34 @@
+---
+title: "Report"
+output: html_document
+params:
+  form: NA
+  dat: NA
+  con: NA
+  model: NA
+  se: NA
+  sample_se: NA
+  rep: NA
+  alpha: NA
+  num: NA
+---
+
+```{r setup, fig.height = 5, fig.width = 5, fig.align = "center"}
+library(RVIMP)
+RVIMP_obj<-RVIMP(formula=params$form,data=params$dat,Z = params$con,residual.model = params$model,keep.ranger = F,seed=params$se)
+RVIMP_obj
+plot(RVIMP_obj,ask=F)
+```
+
+
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+comp_obj<-compare_VIMP_RVIMP(formula = params$form,data = params$dat,residual.model =params$model,seed=params$se)
+comp_obj
+plot(comp_obj)
+```
+
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+RVIMP_test_obj<-test.RVIMP(formula = params$form,data = params$dat,Z=params$con,alpha.one.sided = params$alpha,reps=params$rep,residual.model = params$model,sample_seed = params$sample_se,seed=params$se,keep.ranger=F,num.trees=params$num)
+RVIMP_test_obj
+plot(RVIMP_test_obj)
+```

@@ -1,0 +1,17 @@
+## ---- fig.height = 5, fig.width = 5, fig.align = "center"---------------------
+library(RVIMP)
+data(RVIMP_sim_data)
+RVIMP_obj<-RVIMP(formula=y~.,data=RVIMP_sim_data,conf = "all",residual.model = "Linear",keep.ranger = T,seed=42)
+RVIMP_obj
+plot(RVIMP_obj,ask=F)
+
+## ---- fig.height = 5, fig.width = 5, fig.align = "center"---------------------
+comp_obj<-compare_VIMP_RVIMP(formula = y~.,data = RVIMP_sim_data,residual.model = "Linear",seed=42)
+comp_obj
+plot(comp_obj)
+
+## ---- fig.height = 5, fig.width = 5, fig.align = "center"---------------------
+RVIMP_test_obj<-test.RVIMP(formula = y~.,data = RVIMP_sim_data,conf="x1",alpha.one.sided = 0.05,reps=100,residual.model = "Linear",sample_seed = 50,seed=42)
+RVIMP_test_obj
+plot(RVIMP_test_obj,ask=F)
+

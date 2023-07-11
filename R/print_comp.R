@@ -2,6 +2,7 @@
 #' @description Summarizes the results of the comparison between VIMPs and RVIMPs
 #' @param x \code{RVIMP_comp} object.
 #' @param ... Further arguments to the \link{print} function.
+#' @author Robert Miltenberger
 #' @export
 
 print.RVIMP_comp<-function(x,...){

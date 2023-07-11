@@ -14,3 +14,6 @@
 \description{
 Print results for the comparison between VIMPs and RVIMPs
 }
+\author{
+Robert Miltenberger
+}

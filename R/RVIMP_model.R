@@ -1,6 +1,6 @@
-RVIMP_model<-function(confounder,data,orig.names,mod.type,...){
+RVIMP_model<-function(variables,data,orig.names,mod.type,...){
 
-  conf.index<-which(orig.names==confounder)
+  conf.index<-which(orig.names==variables)
   colnames(data)[conf.index]<-"z"
 
   if(mod.type=="Linear")
@@ -28,7 +28,7 @@ RVIMP_model<-function(confounder,data,orig.names,mod.type,...){
     data[,conf.index]<-scale(data[,conf.index]-mod$predictions)
   }
   rvimp_full_resid_forest<-ranger::ranger(y~.,data = data,importance = "permutation",...)
-  res<-list(conf=confounder,model=rvimp_full_resid_forest,RVIMP=rvimp_full_resid_forest$variable.importance["z"])
+  res<-list(conf=variables,model=rvimp_full_resid_forest,RVIMP=rvimp_full_resid_forest$variable.importance["z"])
   class(res)<-"RVIMP.model"
   res
 }

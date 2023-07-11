@@ -35,3 +35,6 @@ AUCH HIER SOLLTEN WIR UNS NOCH ETWAS AUSDENKEN
 \examples{
 compare_VIMP_RVIMP(y~.,data=RVIMP_sim_data,residual.model="Linear")
 }
+\author{
+Robert Miltenberger
+}

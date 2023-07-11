@@ -1,9 +1,9 @@
 #' Simulated example data set
-#' @description A data set to show the usage of the RVIMP package. This data set is a modified version of the simulation study performed by Strobl et al 2008. It is modified in the way that all variables are standardized.
+#' @description A data set to show the usage of the RVIMP package. This data set is a modified version of the simulation study performed by Strobl et al 2008. It is modified in the way that all variables are standardized. The corresponding variance-covariance-matrix can be found in the vignette \code{vignette("demo", package = "RVIMP")}.
 #' @format A \code{data.frame} with 13 columns, which are:
 #' \describe{
 #' \item{x1}{Pairwise correlation with x2-x4 of 0.9, respectively. Correlation with y of about 0.82. Importance is partially induced from other variables.}
-#' \item{x2}{Pairwise correlation with x2, x3, and x4 of 0.9, respectively. Correlation with y of about 0.82. Importance is partially induced from other variables.}
+#' \item{x2}{Pairwise correlation with x1, x3, and x4 of 0.9, respectively. Correlation with y of about 0.82. Importance is partially induced from other variables.}
 #' \item{x3}{Pairwise correlation with x1, x2, and x4 of 0.9, respectively. Correlation with y of about 0.80. Importance is partially induced from other variables.}
 #' \item{x4}{Pairwise correlation with x1-x3 of 0.9, respectively. Correlation with y of about 0.78. Importance is totally induced from other variables.}
 #' \item{x5}{Independend from all other covariates. Correlation with y of about -0.36.}
@@ -16,9 +16,10 @@
 #' \item{x12}{Independend from all other covariates and y.}
 #' \item{y}{Response variable.}
 #' }
+#' @author Robert Miltenberger
 #' @references
 #' \itemize{
-#'  \item Strobl C, Boulesteix AL, Kneib T, Augustin T, Zeileis A. Conditional variable importance for random forests, BMC Bioinformatics 2008;9:307-317.
+#'  \item Strobl C, Boulesteix AL, Kneib T, Augustin T, Zeileis A. Conditional variable importance for random forests, BMC Bioinformatics 2008;9:307-317. \doi{https://doi.org/10.1186/1471-2105-9-307}
 #' }
 
 "RVIMP_sim_data"

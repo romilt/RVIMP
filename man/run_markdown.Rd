@@ -5,17 +5,19 @@
 \title{Render R Markdown to analyze a data set for dependencies using RVIMP package}
 \usage{
 run_markdown(
-  formula,
-  data,
-  Z,
-  residual.model,
-  seed,
-  reps,
-  sample_seed,
-  alpha.one.sided,
-  num.trees,
-  file.name,
-  file.directory
+  formula = NULL,
+  data = NULL,
+  Z = "all",
+  residual.model = "Linear",
+  seed = 42,
+  reps = 100,
+  sample.seed = 50,
+  alpha.one.sided = 0.05,
+  num.trees = 200,
+  multi.test = T,
+  procedure = "Bonferroni",
+  file.name = NULL,
+  file.directory = NULL
 )
 }
 \arguments{
@@ -23,19 +25,23 @@ run_markdown(
 
 \item{data}{Training data of class data.frame.}
 
-\item{Z}{Name of all variables the RVIMPs shall be calculated for. If \code{conf}="all" the procedure is done for all independed variables from \code{formula}.}
+\item{Z}{Name of all variables the RVIMPs shall be calculated for. If \code{Z="all"} the procedure is done for all independed variables from \code{formula}.}
 
-\item{residual.model}{Modeltype the residuals of \code{conf} shall be based on. Either "Linear" or "RandomForest".}
+\item{residual.model}{Modeltype the residuals of \code{Z} shall be based on. Either "Linear" or "RandomForest".}
 
-\item{seed}{Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample_seed} is needed to draw the resamplings for the test procedure.}
+\item{seed}{Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample.seed} is needed to draw the resamplings for the test procedure.}
 
 \item{reps}{Number of respamplings to estimate the RVIMP distribution with \link{get_distribution}.}
 
-\item{sample_seed}{Seed to use for \link{get_distribution}. Must be set for reproducible results.}
+\item{sample.seed}{Seed to use for \link{get_distribution}. Must be set for reproducible results.}
 
 \item{alpha.one.sided}{Type I error probability.}
 
 \item{num.trees}{Number of trees within each ranger object.}
+
+\item{multi.test}{Logical. Shall a multiple test procedure be performed?}
+
+\item{procedure}{If \code{multi.test=T} either \code{"Bonferroni"}, \code{"Holm"}, or \code{"Sidak"}.}
 
 \item{file.name}{The name of the output file. If using \code{NULL} then the output file is named "report_RVIMP.html".}
 

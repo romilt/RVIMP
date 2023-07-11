@@ -1,6 +1,6 @@
-#' Generates the test disicions criteria plot based on RVIMP distribution
-#' @description Generates the test disicions criteria plot based on RVIMP distribution for variables checked for dependencies
-#' @param x RVIMP_test object.
+#' Generates the test desicions criteria plot based on RVIMP distribution
+#' @description Generates the test desicions criteria plot based on RVIMP distribution for variables checked for dependencies
+#' @param x \code{RVIMP_test} object.
 #' @param which For which variable shall the plot be generated. Either a \link{vector} with the names of the desired variables or \code{"all"} to generate the plot for each variable tested for dependencies.
 #' @param ask Logical. If \code{TRUE} the user is asked to press Enter before a new figure is drawn. If \code{FALSE} all figures are drawn at once.
 #' @param ... Further arguments to the \link{plot} function.

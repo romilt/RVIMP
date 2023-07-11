@@ -9,6 +9,7 @@
 #'   \item{\code{residual.model}}{Model the residuals were built with.}
 #'   \item{\code{table}}{Table containing the corresponding values for VIMPs and RVIMPs.}
 #'   \item{\code{plot}}{Plot for visualised presentation of the comparison.}
+#' @author Robert Miltenberger
 #' @examples
 #' compare_VIMP_RVIMP(y~.,data=RVIMP_sim_data,residual.model="Linear")
 #' @export

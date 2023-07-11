@@ -1,8 +1,9 @@
 #' Get sample from RVIMP distribution from RVIMP_test object
 #' @description Get sample from RVIMP distribution from RVIMP_test object
-#' @param obj RVIMP_test object
-#' @param which Variables the distribution shall be returned for
+#' @param obj \code{RVIMP_test} object.
+#' @param which Variables the distribution shall be returned for.
 #' @return Matrix with samples from the RVIMP distribution the test procedure was performed with for desired variables
+#' @author Robert Miltenberger
 #' @export
 
 

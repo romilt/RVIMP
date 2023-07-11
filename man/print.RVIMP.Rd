@@ -14,3 +14,6 @@
 \description{
 Summarizes the main results from a RVIMP object
 }
+\author{
+Robert Miltenberger
+}

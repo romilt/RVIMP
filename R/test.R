@@ -4,12 +4,13 @@
 #' @param ranger.obj Trained random forest object of class \link{ranger}. If no object is passed \code{formula} is required to generate a new one. Passed \code{ranger} object must contain \code{variable.importance}.
 #' @param data Training data of class data.frame.
 #' @param Z Name of all variables that shall be checked for dependencies. If \code{Z="all"} the procedure is done for all independed variables from \code{formula}.
-#' @param residual.model Model the residuals of \code{Z} shall be estimated with. Either \code{"Linear"} or \code{"RandomForest"}.
+#' @param residual.model Model the residuals of \code{Z} shall be estimated with. Either \code{"Linear"} or \code{"RandomForest"} if residuals shall be estimated within the algorithm or \code{"Precalculated"} if precalculated residuals are passed to \code{residuals} by the user.
+#' @param residuals Residuals, if they are precalculated.
 #' @param alpha.one.sided Type I error probability.
-#' @param keep.ranger Shall either the passed \code{ranger.obj} or the newly generated one be part of the result.
+#' @param keep.ranger Logical. Shall either the passed \code{ranger.obj} or the newly generated one be part of the result.
 #' @param reps Number of respamplings to estimate the RVIMP distribution on. Each resampling is based on a data set with a sample size of 0.632 compared to the original data set.
-#' @param sample_seed Seed to draw the \code{reps} resamplings of the original data set. Must be set for reproducible results.
-#' @param seed Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample_seed} is needed to draw the resamplings for the test procedure.
+#' @param sample.seed Seed to draw the \code{reps} resamplings of the original data set. Must be set for reproducible results.
+#' @param seed Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample.seed} is needed to draw the resamplings for the test procedure.
 #' @param num.trees Number of trees within each ranger object.
 #' @param ... Further arguments to the \link{ranger} function.
 #' @return Object of class \code{RVIMP_test} with elements
@@ -21,25 +22,51 @@
 #'   \item{\code{ranger}}{Object of class \code{ranger} for the original model or \code{NULL} if \code{keep.ranger=F}.}
 #'   \item{\code{RVIMPs}}{List of test results for each tested variable.}
 #'   \item{\code{VIMP}}{Permutation Variable Importance of the original model.}
+#' @author Robert Miltenberger
 #' @examples
 #' test.RVIMP(y~.,data=RVIMP_sim_data,Z="x1")
-#' @seealso \code{\link{RVIMP}}
+#' @seealso \code{\link{RVIMP}} \code{\link{multiple_test.RVIMP}}
 #' @export
 
-test.RVIMP<-function(formula=NULL,ranger.obj=NULL,data=NULL,Z="all",residual.model="Linear",alpha.one.sided=0.05,keep.ranger=T,reps=100,sample_seed=NULL,seed=NULL,num.trees=500,...)
+test.RVIMP<-function(formula=NULL,ranger.obj=NULL,data=NULL,Z="all",residual.model="Linear",residuals=NULL,alpha.one.sided=0.05,keep.ranger=T,reps=100,sample.seed=NULL,seed=NULL,num.trees=500,...)
 {
   if(length(Z)<1)
   {
     stop("Error: At least one variable has to be chosen for procedure.")
+  }
+  if(length(Z)>1 & !is.null(residuals))
+  {
+    stop("Error: If precalculated residuals are passed please just specify one variable for Z.")
   }
   if(!is.null(ranger.obj)&!is.null(formula))
   {
     ranger.obj<-NULL
     warning("Warning: Passed ranger object is negleced because both a ranger object and a formula were passed.")
   }
-  if(sum(residual.model %in% c("Linear","RandomForest"))!=1)
+  if(residual.model!="Precalculated")
   {
-    stop("Error: residual.model must either be Linear or RandomForest.")
+    if(sum(residual.model %in% c("Linear","RandomForest"))!=1)
+    {
+      stop("Error: residual.model must either be Linear or RandomForest.")
+    }
+    if(!is.null(residuals))
+    {
+      residual.model<-"Precalculated"
+      warning("Warning: Both precalculated residuals and a model to estimate the residuals on were passed. Therefore the model is negleced and the passed residuals are used.")
+    }
+    if(Z=="all" & residual.model=="Precalculated")
+    {
+      stop("Error: If precalculated residuals are pass please just specify one variable for Z.")
+    }
+  } else {
+    if(Z=="all")
+    {
+      stop("Error: If precalculated residuals are pass please just specify one variable for Z.")
+    }
+    if(is.null(residuals))
+    {
+      stop("Error: Please either specify the model to estimate the residuals with or pass precalculated residuals.")
+    }
   }
   if(!is.null(ranger.obj))
   {
@@ -59,8 +86,8 @@ test.RVIMP<-function(formula=NULL,ranger.obj=NULL,data=NULL,Z="all",residual.mod
       warning("Warning: passed ranger object is negleced because number of trees differ between object and passed parameter to the funtion.")
     }
   }
-  if (is.null(sample_seed)){
-    sample_seed <- ceiling(stats::runif(1 , 0, 100))
+  if (is.null(sample.seed)){
+    sample.seed <- ceiling(stats::runif(1 , 0, 100))
   }
   if (is.null(seed)){
     seed <- stats::runif(1 , 0, .Machine$integer.max)
@@ -113,10 +140,10 @@ test.RVIMP<-function(formula=NULL,ranger.obj=NULL,data=NULL,Z="all",residual.mod
     colnames(mf)<-c("y",original.names[-1])
   }
 
-  compare_data<-get_distribution(data=mf,confounder = Z,rep = reps,sample_seed = sample_seed,residual.model=residual.model,num.trees=num.trees)
+  compare_data<-get_distribution(data=mf,variables = Z,rep = reps,sample.seed = sample.seed,residual.model=residual.model,residual=residuals,num.trees=num.trees)
   rownames(compare_data)<-Z
 
-  RVIMP_test_obj<-lapply(Z,RVIMP_test_model,data=mf,dens_data=compare_data,org.names=original.names,mod.type=residual.model,alpha=alpha.one.sided,rang.obj=ranger.obj,seed=seed,num.trees=num.trees,...=...)
+  RVIMP_test_obj<-lapply(Z,RVIMP_test_model,data=mf,dens_data=compare_data,org.names=original.names,mod.type=residual.model,alpha=alpha.one.sided,rang.obj=ranger.obj,seed=seed,residual=residuals,num.trees=num.trees,...=...)
   names(RVIMP_test_obj)<-Z
   if(keep.ranger)
   {

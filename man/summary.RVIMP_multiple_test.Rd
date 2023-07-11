@@ -14,3 +14,6 @@
 \description{
 Summary of the results for a RVIMP_multiple_test for dependencies
 }
+\author{
+Robert Miltenberger
+}

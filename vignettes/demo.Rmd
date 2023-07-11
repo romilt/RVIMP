@@ -12,24 +12,100 @@ editor_options:
   chunk_output_type: console
 ---
 
-
+This vingette explains the functionalities of the RVIMP package on an example data set using regression forests but with regression, classification and survival forests all types implemented in the ranger package are supported. By default the procedure will be performed with regression forests. For other forests the corresponding arguments of the ranger package need to be set. \
+Permutation variable importance (VIMP) is a statistic invented by [Breimann (2001)](https://doi.org/10.1023/A:1010933404324) to improve the interpretability of independent variables in the setting of random forests. The VIMP of a variable $X_i$ is defined as follows:
+\[\text{VIMP}(X_i) = E\left[(Y-f(\pi_i(X)))^2\right] - E\left[(Y-f(X))^2\right]\tag{1}\label{eq:generalVIMP},\]
+where $\pi_i$ represents a random permutation of the corresponding variable $X_i$. VIMPs measure the importance of a variable as the increase in out-of-bag prediction error that would result from a decorrelation
+of the outcome and the particular variable by random permutation. However, the importance measure can be of limited use when information is shared by several variables. Amongst others, [Gregorutti et al. (2017)](https://doi.org/10.1007/s11222-016-9646-1), [Debeer et al. (2020)](https://doi.org/10.1186/s12859-020-03622-2) and [Efron (2020)](https://doi.org/10.1080/01621459.2020.1762613) have shown that correlations and other dependencies between variables affect the VIMPs and can make their interpretation difficult. To contribute to a proper interpretation of a variable's importance for prediction, we first derive a residual variable's importance following the concept of semipartial correlations. Then, we compare it to the original VIMP by a permutation test. \
+For deriving the residual variable's importance, we first select the variable of interest and rename it as $Z$. W.l.o.g. $Z=X_p$, that leads to the following model description:
+\[Y = f_1(X_1)+f_2(X_2)+ \dots +f_{p-1}(X_{p-1})+f_p(Z)+\epsilon \tag{$\text{Model}_\text{A}$}\label{eq:modA}\]
+We now define a different description of that model where shared information is removed from $Z$, called $\text{model}_\text{B}$. For that, we decorrelate the variable of interest $Z$ from all other variables $X_1, \dots ,X_{p-1}$. In other words, we separate the part of $Z$ that can be explained by $X_1, \dots ,X_{p-1}$ from the part that is independent from $X_1, \dots ,X_{p-1}$. We define $g:\mathbb{R}^{p-1}\rightarrow\mathbb{R}$ as the model 
+\[ Z=g(X_1, \dots ,X_{p-1})+\epsilon_Z\tag{2}\label{eq:g}\]
+The two parts of model ([2](#mjx-eqn-eq:g)), namely $g(X_1, \dots ,X_{p-1})$ and $\epsilon_Z$, are independent and describe the explained and unexplained part of $Z$, respectively. These to parts can be used to formulate an alternative model description:
+\[Y=\tilde{f}(X_1,...,X_{p-1},\epsilon_Z) + \epsilon \tag{$\text{Model}_\text{B}$}\label{eq:modB}\]
+Now, $\text{VIMP}_\text{A}(\cdot)$ describes the VIMPs of ([$\text{Model}_\text{A}$](#mjx-eqn-eq:modA)) as defined in equation ([1](#mjx-eqn-eq:generalVIMP)) and is defined for $X_1,\dots,X_{p-1}$ and $Z$. In contrast, $\text{VIMP}_\text{B}(\cdot)$ refers to ([$\text{Model}_\text{B}$](#mjx-eqn-eq:modB)) and is defined for $X_1,\dots,X_{p-1}$ and $\epsilon_Z$, with$\text{VIMP}_\text{B}(\epsilon_Z)$ representing the importance of the unique information provided by variable $Z$. \
+It can be shown, that $\text{VIMP}_\text{A}(Z)$ and $\text{VIMP}_\text{B}(\epsilon_Z)$ differ if and only if the part of $Z$ that can be explained by $X_1,...,X_{p-1}$ explains $Y$ and thus the variables $X_1-X_{p-1}$ contribute to the importance of variable $Z$. Therefore we implemented two functions to compare the VIMPs from ([$\text{Model}_\text{A}$](#mjx-eqn-eq:modA)) and ([$\text{Model}_\text{B}$](#mjx-eqn-eq:modB)). For ease of explanation VIMPs from ([$\text{Model}_\text{B}$](#mjx-eqn-eq:modB)) are called RVIMPs (Residual permutation variable importance) throughout this vignette. The first function is called `RVIMP` and compares the VIMPs the original model ([$\text{Model}_\text{A}$](#mjx-eqn-eq:modA)) and the model derived after splitting a particular variable ([$\text{Model}_\text{B}$](#mjx-eqn-eq:modB)), respectively. The functionality is explained with the help of the following example. The example data set is simulated and part of the package. The data are independet realizations of a random vector $D=(X_1,...,X_{12},Y)$ that is normally distributed with mean vector $\vec{\mu}=\vec{0}$ and the following variance-covariance-matrix
+\begin{equation*}
+\Sigma=\begin{pmatrix}
+		1 & 0.9 & 0.9 & 0.9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \frac{11.3}{\sqrt{189.5}}\\
+		0.9 & 1 & 0.9 & 0.9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \frac{11.3}{\sqrt{189.5}}\\
+		0.9 & 0.9 & 1 & 0.9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \frac{11}{\sqrt{189.5}}\\
+		0.9 & 0.9 & 0.9 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \frac{10.8}{\sqrt{189.5}}\\
+		0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \frac{-5}{\sqrt{189.5}}\\
+		0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & \frac{-5}{\sqrt{189.5}}\\
+		0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & \frac{-2}{\sqrt{189.5}}\\
+		0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0\\
+		0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\\
+		\frac{11.3}{\sqrt{189.5}} & \frac{11.3}{\sqrt{189.5}} & \frac{11}{\sqrt{189.5}} & \frac{10.8}{\sqrt{189.5}} & \frac{-5}{\sqrt{189.5}} & \frac{-5}{\sqrt{189.5}} & \frac{-2}{\sqrt{189.5}} & 0 & 0 & 0 & 0 & 0 & 1
+\end{pmatrix}.
+\end{equation*}
+As seen from $\Sigma$ there are strong pairwise correlations between the variables $x_1-x_4$ and all other covariates are independent. Thus, VIMPs for variables $x_1-x_4$ may be affected by the correlated variables for the model's prediction performance.\
+We now define a linear model for equation ([2](#mjx-eqn-eq:g)) for all covariates by setting \code{Z="all"}. Furthermore each random forest consists of 200 trees.
 ```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
 library(RVIMP)
 data(RVIMP_sim_data)
-RVIMP_obj<-RVIMP(formula=y~.,data=RVIMP_sim_data,Z = "all",residual.model = "Linear",keep.ranger = T,seed=42,num.trees=200)
+RVIMP_obj<-RVIMP(formula=y~.,data=RVIMP_sim_data,Z = "all",residual.model = "Linear",
+                 keep.ranger = T,seed=42,num.trees=200)
 RVIMP_obj
-plot(RVIMP_obj,ask=F)
+```
+The result shows, that in particular for the variables $x_1-x_4$ there are larger differences between VIMPs and RVIMPs. But also the variables $x_7$, $x_{11}$, and $x_{12}$ show minor changes. As illustrating example we will have a closer look on the variables $x_1$, $x_2$, and $x_7$ and explore these variables graphically.
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+plot(RVIMP_obj,which=c("x1","x2","x7"))
+```
+The first two plots show the same behavior. The RVIMP for the corresponding variable of interest ($x_1$ or $x_2$) decreases compared to the original VIMP and $\text{VIMP}_\text{B}(\cdot)$ increases compared to the $\text{VIMP}_\text{A}(\cdot)$ for the remaining variables out of $x_1-x_4$. This flags the need of a careful interpretation of the permutation importance of these variables due to their correlations. Also the plot for variable $x_7$ shows slight differences between VIMP and RVIMP, but these are way smaller compared to the ones for variables $x_1-x_4$.\
+The second function for comparing VIMPs and RVIMPs is called `compare_VIMP_RVIMP`. Instead of comparing the VIMPs from ([$\text{Model}_\text{A}$](#mjx-eqn-eq:modA)) and ([$\text{Model}_\text{B}$](#mjx-eqn-eq:modB)) for selected variables, this function compares $\text{VIMP}_\text{A}(X_i)$ to $\text{RVIMP}(\epsilon_{X_i})$ for all variables. 
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+comp_obj<-compare_VIMP_RVIMP(formula = y~.,data = RVIMP_sim_data,
+                             residual.model = "Linear",seed=42,
+                             num.trees=200)
+comp_obj
 ```
 
-
 ```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
-comp_obj<-compare_VIMP_RVIMP(formula = y~.,data = RVIMP_sim_data,residual.model = "Linear",seed=42)
-comp_obj
 plot(comp_obj)
 ```
+The tabular shows the same results as the function `RVIMP`, as the latter has been called with \code{Z="all"}. However, the plot function shows a different picture. The plot summarizes the results from all models, each adressing a single variable. It should be mentioned that the results of both functions only match exactly if the seed and the number of trees are the same. That can be controlled with the help of the parameters `seed` and `num.trees`. \
+As a next step, we derived a statistical hypothesis test to test if there is a statistically significant difference between VIMP and RVIMP for a particular variable. For that, we test the hypothesis
+\begin{align*}
+H_0:&\quad \text{VIMP}(Z)=\text{RVIMP}(Z)\\
+H_1:&\quad \text{VIMP}(Z)> \text{RVIMP}(Z)
+\end{align*} 
+To perform this test the density of the RVIMP distribution $d_{\text{RVIMP}(Z)}$ is required and therefore estimated by resamplings from the observed data $D$. The exact procedure for the test is as follows: \
 
+* Inputs:
+
+  - The observed data $D=(\mathbf{y},\mathbf{x_1},...,\mathbf{x_{p-1}},\mathbf{z})$
+  - The number of replications for density estimation $reps$
+  - $\text{VIMP}(Z)$
+  - Model class $G$
+  - Significance level $\alpha$
+  
+1. For $i=1,\dots,reps$:
+   a) Draw a random sample $D^{(i)}$ from $D$ containing $63.2\%$ of all $n$ observations
+   b) Calculate $\epsilon_Z$ for random sample $D^{(i)}$
+   c) Estimate $\text{RVIMP}(Z)^{(i)}$
+2. Estimate the density $d_{\text{RVIMP}(Z)}$
+3. Reject $H_0$ if $\text{VIMP}(Z)> 100\cdot(1-\alpha)\%\text{-quantile of }d_{\text{RVIMP}(Z)}$
+
+Applying this procedure to variables $x_1$, $x_2$, and $x_7$ each with a total number of 100 resamples provides the following results:
 ```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
-RVIMP_test_obj<-test.RVIMP(formula = y~.,data = RVIMP_sim_data,Z="x1",alpha.one.sided = 0.05,reps=100,residual.model = "Linear",sample_seed = 50,seed=42,num.trees=200)
+RVIMP_test_obj<-test.RVIMP(formula = y~.,data = RVIMP_sim_data,
+                           Z=c("x1","x2","x7"),alpha.one.sided = 0.05,reps=100,
+                           residual.model = "Linear",sample.seed = 50,
+                           seed=42,num.trees=200)
 RVIMP_test_obj
-plot(RVIMP_test_obj,ask=F)
 ```
+The corresponding output shows both the VIMP and RVIMP as well as the $(1-\alpha)-$quantile of $d_{\text{RVIMP}(Z)}$ and the p-value. For variables $x_1$ and $x_2$ the test procedure results in a statistically significant difference between VIMP and RVIMP with a p-value of 0. Here it should be mentioned that these p-values are based on resamples and therefore just approximations. For variable $x_7$ the procedure results in a p-value of $\approx0.63$ and therefore the null hypothesis can not be rejected. \
+For visualization of the test results we generate a plot displaying the test desicion.
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+plot(RVIMP_test_obj,which="x7",ask=F)
+```
+As we may test for several independent variables a multiple comparison problem may arise. Therefore we implemented the multiple test procedures from `Bonferroni`, `Holm`, and `Sidak` either controlling the Family-wise error rate (FWER) or the False discovery rate (FDR).
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+RVIMP_multiple_test_obj<-multiple_test.RVIMP(RVIMP_test_obj,method="Bonferroni")
+RVIMP_multiple_test_obj
+```
+By applying the Bonferroni procedure to our example we notice that there is still a statistically significant difference between VIMP and RVIMP for both variables $x_1$ and $x_2$.\

@@ -2,17 +2,20 @@
 % Please edit documentation in R/plot_RVIMP_multiple_test.R
 \name{plot.RVIMP_multiple_test}
 \alias{plot.RVIMP_multiple_test}
-\title{Generates the test disicions criteria plot based on RVIMP distribution for multiple test procedure}
+\title{Generates the test desicions criteria plot based on RVIMP distribution for multiple test procedure}
 \usage{
 \method{plot}{RVIMP_multiple_test}(x, which = "all", ...)
 }
 \arguments{
-\item{x}{RVIMP_multiple_test object.}
+\item{x}{\code{RVIMP_multiple_test} object.}
 
 \item{which}{For which variable shall the plot be generated. Either a \link{vector} with the names of the desired variables or \code{"all"} to generate the plot for each variable tested for dependencies.}
 
 \item{...}{Further arguments to the \link{plot} function.}
 }
 \description{
-Generates the test disicions criteria plot based on RVIMP distribution for variables checked for dependencies
+Generates the test desicions criteria plot based on RVIMP distribution for variables checked for dependencies
+}
+\author{
+Robert Miltenberger
 }

@@ -2,6 +2,7 @@
 #' @description Summary of the results for a RVIMP_multiple_test for dependencies
 #' @param object \code{RVIMP_multiple_test} object.
 #' @param ... Further arguments to the \link{summary} function.
+#' @author Robert Miltenberger
 #' @export
 
 summary.RVIMP_multiple_test<-function(object,...){

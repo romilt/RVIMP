@@ -4,18 +4,28 @@
 \alias{get_distribution}
 \title{Generate an estimation for RVIMPs distribution based on resamplings}
 \usage{
-get_distribution(data, confounder, rep, sample_seed, residual.model, num.trees)
+get_distribution(
+  data,
+  variables,
+  residual,
+  rep,
+  sample.seed,
+  residual.model,
+  num.trees
+)
 }
 \arguments{
 \item{data}{data set the estimation shall be based on}
 
-\item{confounder}{Variables the distribution shall be estimated for}
+\item{variables}{Variables the distribution shall be estimated for}
+
+\item{residual}{Residuals if they are precalculated.}
 
 \item{rep}{Number of resamplings the distribution shall be estimated on}
 
-\item{sample_seed}{Seed for drawing the resamplings}
+\item{sample.seed}{Seed for drawing the resamplings}
 
-\item{residual.model}{Model the residuals of \code{conf} shall be estimated with. Either Linear or RandomForest.}
+\item{residual.model}{Model the residuals of \code{variables} shall be estimated with. Either "Linear" or "RandomForest".}
 
 \item{num.trees}{Number of trees within each ranger object.}
 }

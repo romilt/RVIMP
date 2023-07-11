@@ -7,13 +7,16 @@
 get_rvimp_sample(obj, which = "all")
 }
 \arguments{
-\item{obj}{RVIMP_test object}
+\item{obj}{\code{RVIMP_test} object.}
 
-\item{which}{Variables the distribution shall be returned for}
+\item{which}{Variables the distribution shall be returned for.}
 }
 \value{
 Matrix with samples from the RVIMP distribution the test procedure was performed with for desired variables
 }
 \description{
 Get sample from RVIMP distribution from RVIMP_test object
+}
+\author{
+Robert Miltenberger
 }

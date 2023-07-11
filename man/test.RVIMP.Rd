@@ -10,10 +10,11 @@ test.RVIMP(
   data = NULL,
   Z = "all",
   residual.model = "Linear",
+  residuals = NULL,
   alpha.one.sided = 0.05,
   keep.ranger = T,
   reps = 100,
-  sample_seed = NULL,
+  sample.seed = NULL,
   seed = NULL,
   num.trees = 500,
   ...
@@ -28,17 +29,19 @@ test.RVIMP(
 
 \item{Z}{Name of all variables that shall be checked for dependencies. If \code{Z="all"} the procedure is done for all independed variables from \code{formula}.}
 
-\item{residual.model}{Model the residuals of \code{Z} shall be estimated with. Either \code{"Linear"} or \code{"RandomForest"}.}
+\item{residual.model}{Model the residuals of \code{Z} shall be estimated with. Either \code{"Linear"} or \code{"RandomForest"} if residuals shall be estimated within the algorithm or \code{"Precalculated"} if precalculated residuals are passed to \code{residuals} by the user.}
+
+\item{residuals}{Residuals, if they are precalculated.}
 
 \item{alpha.one.sided}{Type I error probability.}
 
-\item{keep.ranger}{Shall either the passed \code{ranger.obj} or the newly generated one be part of the result.}
+\item{keep.ranger}{Logical. Shall either the passed \code{ranger.obj} or the newly generated one be part of the result.}
 
 \item{reps}{Number of respamplings to estimate the RVIMP distribution on. Each resampling is based on a data set with a sample size of 0.632 compared to the original data set.}
 
-\item{sample_seed}{Seed to draw the \code{reps} resamplings of the original data set. Must be set for reproducible results.}
+\item{sample.seed}{Seed to draw the \code{reps} resamplings of the original data set. Must be set for reproducible results.}
 
-\item{seed}{Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample_seed} is needed to draw the resamplings for the test procedure.}
+\item{seed}{Seed passed to ranger function for generating the Random Forest. Must be set for reproducible results. Note: \code{seed} is passed to the \code{ranger} function to generate the Random Forest, whereas \code{sample.seed} is needed to draw the resamplings for the test procedure.}
 
 \item{num.trees}{Number of trees within each ranger object.}
 
@@ -62,5 +65,8 @@ Performes a resampling test to check if a variables importance is at least parti
 test.RVIMP(y~.,data=RVIMP_sim_data,Z="x1")
 }
 \seealso{
-\code{\link{RVIMP}}
+\code{\link{RVIMP}} \code{\link{multiple_test.RVIMP}}
+}
+\author{
+Robert Miltenberger
 }

@@ -1,8 +1,9 @@
-#' Generates the test disicions criteria plot based on RVIMP distribution for multiple test procedure
-#' @description Generates the test disicions criteria plot based on RVIMP distribution for variables checked for dependencies
-#' @param x RVIMP_multiple_test object.
+#' Generates the test desicions criteria plot based on RVIMP distribution for multiple test procedure
+#' @description Generates the test desicions criteria plot based on RVIMP distribution for variables checked for dependencies
+#' @param x \code{RVIMP_multiple_test} object.
 #' @param which For which variable shall the plot be generated. Either a \link{vector} with the names of the desired variables or \code{"all"} to generate the plot for each variable tested for dependencies.
 #' @param ... Further arguments to the \link{plot} function.
+#' @author Robert Miltenberger
 #' @export
 
 plot.RVIMP_multiple_test<-function(x,which="all",...){

@@ -2,25 +2,28 @@
 % Please edit documentation in R/multiple_test.R
 \name{multiple_test.RVIMP}
 \alias{multiple_test.RVIMP}
-\title{Adjustment for multiple test procedure}
+\title{Adjustment for a multiple comparison problem}
 \usage{
 multiple_test.RVIMP(test.obj = NULL, method = "Bonferroni")
 }
 \arguments{
-\item{test.obj}{Object of class test_RVIMP.}
+\item{test.obj}{\code{test_RVIMP} object.}
 
-\item{method}{Which procedure shall be applied for adjustment? Either "\code{Bonferoni}", "\code{Sidak}" or "\code{Holm}".}
+\item{method}{Which procedure shall be applied for adjustment? Either "\code{Bonferroni}", "\code{Sidak}" or "\code{Holm}".}
 }
 \value{
 Object of class \code{RVIMP_multiple_test} with elements
- \item{\code{method}}{With multiple test procedure was used.}
- \item{\code{confounded}}{Name of the variables tested for dependencies.}
- \item{\code{multiple_tests}}{List with results for multiple test procedure for desired variables \code{confounded}.}
+ \item{\code{method}}{Which multiple test procedure was performed.}
+ \item{\code{variables}}{Name of the variables tested for dependencies.}
+ \item{\code{multiple_tests}}{List with results for multiple test procedure for desired variables \code{variables}.}
 }
 \description{
-Adjustment for multiple test procedure
+Adjustment for a multiple comparison problem by applying either Bonferroni, Sidak, or Holm procedure to control the Family-wise error rate (FWER) or the False discovery rate (FDR).
 }
 \examples{
 RVIMP_test_object<-test.RVIMP(y~.,data=RVIMP_sim_data,Z=c("x1","x2"))
 multiple_test.RVIMP(RVIMP_test_object,method="Bonferroni")
+}
+\author{
+Robert Miltenberger
 }

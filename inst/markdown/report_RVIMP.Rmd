@@ -11,6 +11,8 @@ params:
   rep: NA
   alpha: NA
   num: NA
+  multi: NA
+  procedure: NA
 ---
 
 ```{r setup, fig.height = 5, fig.width = 5, fig.align = "center"}
@@ -28,7 +30,17 @@ plot(comp_obj)
 ```
 
 ```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
-RVIMP_test_obj<-test.RVIMP(formula = params$form,data = params$dat,Z=params$con,alpha.one.sided = params$alpha,reps=params$rep,residual.model = params$model,sample_seed = params$sample_se,seed=params$se,keep.ranger=F,num.trees=params$num)
+RVIMP_test_obj<-test.RVIMP(formula = params$form,data = params$dat,Z=params$con,alpha.one.sided = params$alpha,reps=params$rep,residual.model = params$model,sample.seed = params$sample_se,seed=params$se,keep.ranger=F,num.trees=params$num)
 RVIMP_test_obj
 plot(RVIMP_test_obj)
+```
+
+
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+if(params$multi)
+{
+  RVIMP_multi_test_obj<-multiple_test.RVIMP(RVIMP_test_obj,method = params$procedure)
+  RVIMP_multi_test_obj
+  plot(RVIMP_multi_test_obj)
+}
 ```

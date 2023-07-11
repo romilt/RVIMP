@@ -4,8 +4,7 @@ Title: A Toolkit for better interpretability of Random Forests
 Version: 0.1.0
 Author: University of Applied Sciences Darmstadt
 Maintainer: Robert Miltenberger <robert.miltenberger@h-da.de>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: RVIMP is a package created for better interpretability of independen variables in the setting of Random Forests. The procedure is based on permutation variable importance (VIMP). These VIMPs measure a variable's marginal influence only, that can make its interpretation difficult or even misleading. This package contains a statistical test to detect dependencies within the set of independen variables and furthermore a method to correct affected variables for such dependencies.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -18,6 +17,7 @@ Imports:
   graphics
 Depends: R (>= 2.10)
 Suggests:
-  rmarkdown,
-  knitr
+    rmarkdown,
+    knitr,
+    testthat (>= 2.1.0)
 VignetteBuilder: knitr

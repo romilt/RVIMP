@@ -18,3 +18,6 @@
 \description{
 Generates the plot to compare VIMPs from model_A and model_B with for every variable checked for dependencies.
 }
+\author{
+Robert Miltenberger
+}
